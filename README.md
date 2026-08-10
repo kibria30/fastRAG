@@ -59,14 +59,6 @@ Key modules:
 
 Add Markdown files to the `knowledge_base/` folder and run the ingestion step to index them.
 
-## Integrations & Features
-
-- **Agent behavior with tool calling:** supports agent-style workflows where an orchestration layer can invoke local tool services (for example, `app/services/tool_services/weather_tools.py`) in a safe, auditable way.
-- **FastEmbed (embedding service):** plug-in friendly, high-performance embedding adapter for low-latency local embeddings under `app/services/embedding_services/`.
-- **Groq (LLM API):** support for Groq LLM endpoints via `app/services/llm_services/groqLLMService.py` for ultra-low-latency model queries.
-- **Qdrant (vector DB):** recommended production-ready vector store; `app/services/vector_store_service.py` can be configured to use Qdrant for persistent, fast nearest-neighbor search.
-- **LangChain (wrapper):** optional LangChain adapters let you use chains, agents, and higher-level orchestration while preserving the repo's provider-agnostic service abstractions.
-
 ## Contributing
 
 Feel free to open issues or PRs. Keep changes focused and include tests where appropriate.
