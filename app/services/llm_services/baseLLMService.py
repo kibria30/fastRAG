@@ -64,7 +64,14 @@ class BaseLLMService(ABC):
 
         for call in response.tool_calls:
             tool = TOOL_MAP.get(call["name"])
-            result = await tool.ainvoke(call["args"])
+            if tool is None:
+                result = {"error": f"Unknown tool: {call['name']}"}
+            else:
+                try:
+                    result = await tool.ainvoke(call["args"])
+                except Exception as exc:
+                    result = {"error": str(exc)}
+
             messages.append(
                 ToolMessage(content=str(result), tool_call_id=call["id"])
             )

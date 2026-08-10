@@ -19,29 +19,42 @@ def get_latitude_and_longitude_from_location(location: str):
 @tool
 def get_weather(location: str = "Dhaka"):
     """
-    Get the current weather for a given location(keep it by default dhaka as latitude and longitude are only given Dhaka only) using the Open-Meteo API.
+    Get the current weather for a given location (defaults to Dhaka) using the Open-Meteo API.
     """
-    latitude, longitude = get_latitude_and_longitude_from_location(location)
+    try:
+        latitude, longitude = get_latitude_and_longitude_from_location(location)
+    except ValueError as exc:
+        return {"error": str(exc)}
+
     params = {
         "latitude": latitude,
         "longitude": longitude,
         "current": "temperature_2m,relative_humidity_2m,wind_speed_10m",
         "timezone": "auto"
     }
-    
+
     try:
-        response = requests.get(URL, params=params)
+        response = requests.get(URL, params=params, timeout=10)
         response.raise_for_status()
-        
-        data = response.json()
-        current_weather = data["current"]
-        
+
+        try:
+            data = response.json()
+        except ValueError as exc:
+            return {
+                "error": "Weather service returned invalid or empty JSON.",
+                "details": response.text[:200],
+            }
+
+        current_weather = data.get("current")
+        if not current_weather:
+            return {"error": "Weather service returned no current weather data."}
+
         return {
-            "temperature": current_weather["temperature_2m"],
-            "humidity": current_weather["relative_humidity_2m"],
-            "wind_speed": current_weather["wind_speed_10m"]
+            "temperature": current_weather.get("temperature_2m"),
+            "humidity": current_weather.get("relative_humidity_2m"),
+            "wind_speed": current_weather.get("wind_speed_10m")
         }
-    except requests.exceptions.RequestException as e:
-        raise RuntimeError(f"Error fetching weather data: {e}")
+    except requests.exceptions.RequestException as exc:
+        return {"error": f"Error fetching weather data: {exc}"}
 
     

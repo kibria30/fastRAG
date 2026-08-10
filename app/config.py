@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     CHUNK_OVERLAP: int = Field(default=50, env="CHUNK_OVERLAP")
     GROQ_MODEL: str = Field(default="llama-3.1-8b-instant", env="GROQ_MODEL")
     GROQ_API_KEY: str = Field(default="your_groq_api_key", env="GROQ_API_KEY")
+    TELEGRAM_BOT_TOKEN: str = Field(default="your_telegram_bot_token", env="TELEGRAM_BOT_TOKEN")
 
     class Config:
         env_file = ".env"
