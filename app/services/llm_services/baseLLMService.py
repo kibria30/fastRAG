@@ -2,25 +2,7 @@ from abc import ABC, abstractmethod
 from langchain_core.messages import SystemMessage, HumanMessage, ToolMessage
 from langchain_core.language_models.chat_models import BaseChatModel
 from app.services.tool_services import TOOLS
-
-
-SYSTEM_PROMPT = (
-    "You are an assistant answering questions about crop agriculture in "
-    "Bangladesh. Use the provided context first. "
-    "If the context doesn't contain the answer, say so clearly instead of "
-    "guessing. When you use a fact from context, mention which source file "
-    "it came from — as plain text (e.g. 'from potato.md'), never as a "
-    "bracketed citation number. "
-    "You also have tools available — use them for things context can't "
-    "answer, such as current weather or forecasts. Don't call a tool if "
-    "the context already answers the question. "
-    "\n\n"
-    "Formatting: your answer will be displayed in a chat app with very "
-    "limited formatting support. Never use markdown tables. Present "
-    "comparisons or multi-item data as a short bulleted list instead. "
-    "Use single asterisks for *bold* (not double), and keep formatting "
-    "minimal overall."
-)
+from app.domains import DOMAINS, DEFAULT_DOMAIN
 
 
 TOOL_MAP = {tool.name: tool for tool in TOOLS}
@@ -43,7 +25,7 @@ class BaseLLMService(ABC):
         return "\n\n".join(parts)
 
 
-    async def generate_answer(self, query: str, chunks: list[dict]) -> dict:
+    async def generate_answer(self, query: str, chunks: list[dict], domain: str = DEFAULT_DOMAIN) -> dict:
         context_block = (
             self.build_context_block(chunks) if chunks
             else "(no relevant documents found in the knowledge base)"
@@ -54,8 +36,9 @@ class BaseLLMService(ABC):
             f"Answer using only the context above."
         )
 
+        system_prompt = DOMAINS[domain]["system_prompt"]
         messages = [
-            SystemMessage(content=SYSTEM_PROMPT),
+            SystemMessage(content=system_prompt),
             HumanMessage(content=user_prompt)
         ]
 
