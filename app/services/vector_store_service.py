@@ -23,7 +23,7 @@ def _chunk_id(chunk: dict) -> str:
 
 
 class QdrantStore:
-    def __init__(self, collection_name: str = settings.FARMING_KNOWLEDGE_BASE_COLLECTION_NAME):
+    def __init__(self, collection_name: str):
         self.collection_name = collection_name
         self.client = QdrantClient(url=settings.QDRANT_URL)
 
